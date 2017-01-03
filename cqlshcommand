@@ -1,0 +1,278 @@
+
+ SOURCE [cqlsh only]
+
+        Executes a file containing CQL statements. Gives the output for each
+        statement in turn, if any, or any errors that occur along the way.
+
+        Errors do NOT abort execution of the CQL source file.
+
+        Usage:
+
+          SOURCE '<file>';
+
+        That is, the path to the file to be executed must be given inside a
+        string literal. The path is interpreted relative to the current working
+        directory. The tilde shorthand notation ('~/mydir') is supported for
+        referring to $HOME.
+cqlsh> source 'input.txt';
+
+ roll | fname    | lname
+------+----------+--------
+    1 | priyanka |  marathe
+    2 | prachi   |  devker
+    3 | rutuja   |  jagtap
+
+(3 rows)
+
+ roll | fname | lname
+------+-------+-------
+    3 | rutuja| jagtap
+
+(1 rows)
+
+
+
+
+ CAPTURE [cqlsh only]
+
+        Begins capturing command output and appending it to a specified file.
+        Output will not be shown at the console while it is captured.It is use to 
+        capture data.
+
+        Usage:
+
+          CAPTURE '<file>';
+          CAPTURE OFF;
+          CAPTURE;
+
+        That is, the path to the file to be appended to must be given inside a
+        string literal. The path is interpreted relative to the current working
+        directory. The tilde shorthand notation ('~/mydir') is supported for
+        referring to $HOME.
+
+        Only query result output is captured. Errors and output from cqlsh-
+        only commands will still be shown in the cqlsh session.
+
+        To stop capturing output and show it in the cqlsh session again, use
+        CAPTURE OFF.
+
+        To inspect the current capture configuration, use CAPTURE with no
+        arguments.
+
+cqlsh> capture 'cqass.txt';
+Now capturing query output to 'cqass.txt'.
+
+
+ DESCRIBE KEYSPACES
+
+          DESCRIBE [cqlsh only]
+
+        (DESC may be used as a shorthand.)
+
+          Outputs information about the connected Cassandra cluster, or about
+          the data stored on it. Use in one of the following ways:
+
+        DESCRIBE KEYSPACES
+
+          Output the names of all keyspaces.
+
+        DESCRIBE KEYSPACE [<keyspacename>]
+
+          Output CQL commands that could be used to recreate the given
+          keyspace, and the tables in it. In some cases, as the CQL interface
+          matures, there will be some metadata about a keyspace that is not
+          representable with CQL. That metadata will not be shown.
+
+          The '<keyspacename>' argument may be omitted when using a non-system
+          keyspace; in that case, the current keyspace will be described.
+
+        DESCRIBE TABLES
+
+          Output the names of all tables in the current keyspace, or in all
+          keyspaces if there is no current keyspace.
+
+        DESCRIBE TABLE <tablename>
+
+          Output CQL commands that could be used to recreate the given table.
+          In some cases, as above, there may be table metadata which is not
+          representable and which will not be shown.
+
+        DESCRIBE INDEX <indexname>
+
+          Output CQL commands that could be used to recreate the given index.
+          In some cases, there may be index metadata which is not representable
+          and which will not be shown.
+
+        DESCRIBE CLUSTER
+
+          Output information about the connected Cassandra cluster, such as the
+          cluster name, and the partitioner and snitch in use. When you are
+          connected to a non-system keyspace, also shows endpoint-range
+          ownership information for the Cassandra ring.
+
+        DESCRIBE [FULL] SCHEMA
+
+          Output CQL commands that could be used to recreate the entire (non-system) schema.
+          Works as though "DESCRIBE KEYSPACE k" was invoked for each non-system keyspace
+          k. Use DESCRIBE FULL SCHEMA to include the system keyspaces.
+
+        DESCRIBE <objname>
+
+          Output CQL commands that could be used to recreate the entire object schema,
+          where object can be either a keyspace or a table or an index (in this order).
+
+
+cqlsh:stud> describe keyspace;
+
+CREATE KEYSPACE studentdata WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
+
+CREATE TABLE studentdata.enroll (
+    enrollid int,
+    studid int,
+    testmark map<text, int>,
+    PRIMARY KEY (enrollid, studid)
+) WITH CLUSTERING ORDER BY (studid ASC)
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = '{"keys":"ALL", "rows_per_partition":"NONE"}'
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy'}
+    AND compression = {'sstable_compression': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99.0PERCENTILE';
+
+CREATE TABLE studentdata.student (
+    studid int PRIMARY KEY,
+    address map<text, text>,
+    age int,
+    contact set<text>,
+    email list<text>,
+    hobby text,
+    name text
+) WITH bloom_filter_fp_chance = 0.01
+    AND caching = '{"keys":"ALL", "rows_per_partition":"NONE"}'
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy'}
+    AND compression = {'sstable_compression': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99.0PERCENTILE';
+CREATE INDEX stud_age ON studentdata.student (age);
+
+ Begins capturing command output and appending it to a specified file.
+        Output will not be shown at the console while it is captured.
+
+        Usage:
+
+          CAPTURE '<file>';
+          CAPTURE OFF;
+          CAPTURE;
+
+        That is, the path to the file to be appended to must be given inside a
+        string literal. The path is interpreted relative to the current working
+        directory. The tilde shorthand notation ('~/mydir') is supported for
+        referring to $HOME.
+
+        Only query result output is captured. Errors and output from cqlsh-only
+        commands will still be shown in the cqlsh session.
+
+        To stop capturing output and show it in the cqlsh session again, use
+        CAPTURE OFF.
+
+        To inspect the current capture configuration, use CAPTURE with no
+        arguments.
+
+
+
+cqlsh:mykeyspace1> capture off;
+cqlsh:mykeyspace1> select * from student;
+
+
+ roll | fname     | lname
+------+-----------+--------
+    1 | priyanka  |marathe 
+    2 | prachi    |devker  
+    3 | rutuja    |jagtap
+ 
+
+(3 rows)
+
+ EXPAND [cqlsh]
+
+          Enables or disables expanded (vertical) output.
+
+        EXPAND ON
+
+          Enables expanded (vertical) output.
+
+        EXPAND OFF
+
+          Disables expanded (vertical) output.
+
+        EXPAND
+
+          EXPAND with no arguments shows the current value of expand setting.
+        
+
+
+cqlsh:mykeyspace1> expand on;
+Now Expanded output is enabled
+cqlsh:mykeyspace1> select * from student;
+
+@ Row 1
+-------+--------
+ roll  | 1
+ fname | priyanka
+ lname | marathe
+
+@ Row 2
+-------+--------
+ roll  | 2
+ fname | prachi
+ lname | Jagtap
+
+@ Row 3
+-------+--------
+ roll  | 3
+ fname | rutuja
+ lname | jagtap
+
+(3 rows)
+
+
+cqlsh:mykeyspace1> expand off;
+Disabled Expanded output.
+
+EXPAND [cqlsh]
+
+          Enables or disables expanded (vertical) output.
+
+        EXPAND ON
+
+          Enables expanded (vertical) output.
+
+        EXPAND OFF
+
+          Disables expanded (vertical) output.
+
+        EXPAND
+
+          EXPAND with no arguments shows the current value of expand setting.
+        
+
+cqlsh:mykeyspace1> copy student(roll,fname) to 'cqass.txt';
+
+3 rows exported in 0.006 seconds.
+
+
+
